@@ -1,5 +1,4 @@
-use core::panic;
-use std::{io, borrow::Borrow};
+use std::io;
 
 enum Shape {
     Rock,
@@ -28,14 +27,14 @@ fn match_move(code: &str) -> Shape {
     }
 }
 
-fn flip_move(round: [&Shape; 2]) -> [Shape; 2] {
+fn flip_move(round: [&Shape; 2]) -> [&Shape; 2] {
     match round {
-        [Shape::Rock, Shape::ShouldWin] => [Shape::Rock, Shape::Paper],
-        [Shape::Paper, Shape::ShouldWin] => [Shape::Paper, Shape::Scissors],
-        [Shape::Scissors, Shape::ShouldWin] => [Shape::Scissors, Shape::Rock],
-        [Shape::Rock, Shape::ShouldLose] => [Shape::Rock, Shape::Scissors],
-        [Shape::Paper, Shape::ShouldLose] => [Shape::Paper, Shape::Rock],
-        [Shape::Scissors, Shape::ShouldLose] => [Shape::Scissors, Shape::Paper],
+        [Shape::Rock, Shape::ShouldWin] => [&Shape::Rock, &Shape::Paper],
+        [Shape::Paper, Shape::ShouldWin] => [&Shape::Paper, &Shape::Scissors],
+        [Shape::Scissors, Shape::ShouldWin] => [&Shape::Scissors, &Shape::Rock],
+        [Shape::Rock, Shape::ShouldLose] => [&Shape::Rock, &Shape::Scissors],
+        [Shape::Paper, Shape::ShouldLose] => [&Shape::Paper, &Shape::Rock],
+        [Shape::Scissors, Shape::ShouldLose] => [&Shape::Scissors, &Shape::Paper],
         [opponent_move, Shape::ShouldDraw] => [opponent_move, opponent_move],
         _ => panic!()
     }
@@ -66,6 +65,7 @@ fn move_score(shape: &Shape) -> i16 {
         Shape::Rock => 1,
         Shape::Paper => 2,
         Shape::Scissors => 3,
+        _ => panic!()
     }
 }
 
@@ -75,8 +75,9 @@ fn main() -> io::Result<()> {
         .split_terminator('\n')
         .map(|s| {
             let round = s.split(' ').map(|code| match_move(code)).collect::<Vec<Shape>>();
-            if let [opponent_move, player_move] = round.as_slice() {
-                let outcome = outcome(flip_move([opponent_move, player_move]));
+            if let [opponent_move, original_player_move] = round.as_slice() {
+                let [_, player_move] = flip_move([&opponent_move, &original_player_move]);
+                let outcome = outcome([opponent_move, player_move]);
                 outcome_score(outcome) + move_score(player_move)
             } else {
                 0
