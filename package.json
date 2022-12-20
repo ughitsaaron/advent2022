@@ -1,0 +1,11 @@
+{
+  "name": "aoc2022",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ughitsaaron/advent2022.git",
+  "author": "Aaron Petcoff <a.p.petcoff@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^4.9.4"
+  }
+}
